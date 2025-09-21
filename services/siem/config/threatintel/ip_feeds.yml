@@ -1,0 +1,5 @@
+192.168.100.10: "C2-Server"
+203.0.113.5: "Ransomware-C2"
+198.51.100.20: "Botnet-Command"
+45.77.12.34: "Known-Malicious-IP"
+8.8.8.8: "Suspicious-Scanner"

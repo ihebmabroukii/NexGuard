@@ -1,0 +1,46 @@
+services:
+  wazuh:
+    build: ../../services/siem
+    container_name: nexguard-wazuh
+    hostname: wazuh
+    restart: unless-stopped
+    ports:
+      - "55000:55000"
+      - "1514:1514/udp"
+      - "5044:5044"
+    volumes:
+      - ../../services/siem/config/rules:/var/ossec/etc/rules:ro
+      - ../../services/siem/config/threatintel:/var/ossec/etc/threatintel:ro
+      - ../../services/siem/config/logstash:/etc/logstash/conf.d:ro
+      - wazuh-data:/var/ossec/data
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.1.4
+    container_name: nexguard-elasticsearch
+    environment:
+      - ELASTIC_PASSWORD=ChangeMeSecurely!
+      - xpack.security.authc.apiKey.enabled=true
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.key=/usr/share/elasticsearch/config/certs/node.key
+      - xpack.security.transport.ssl.certificate=/usr/share/elasticsearch/config/certs/node.crt
+      - xpack.security.transport.ssl.certificate_authorities=/usr/share/elasticsearch/config/certs/ca.crt
+    ports:
+      - "9200:9200"
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+      - ./certs:/usr/share/elasticsearch/config/certs:ro
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:9.1.4
+    container_name: nexguard-kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=ChangeMeSecurely!
+    ports:
+      - "5601:5601"
+
+volumes:
+  wazuh-data:
+  es-data:
