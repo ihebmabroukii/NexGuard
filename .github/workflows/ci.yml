@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # - name: Validate Docker Compose
+      #   run: docker-compose -f deployments/docker/siem/docker-compose.yml config
+      #   TODO: Uncomment when docker-compose file is created
