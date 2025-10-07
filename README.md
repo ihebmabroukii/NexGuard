@@ -42,3 +42,5 @@ git clone https://github.com/<your-org>/NexGuard.git
 cd NexGuard
 git checkout develop
 ```
+
+honeypot vm username: honeypot pwd:honeypot
