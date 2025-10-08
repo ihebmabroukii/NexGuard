@@ -1,0 +1,20 @@
+filebeat.inputs:
+  - type: log
+    enabled: false
+
+filebeat.modules:
+  - module: suricata
+    eve:
+      enabled: true
+      var.paths:
+        - /usr/share/filebeat/eve.json
+
+setup.ilm.enabled: auto
+setup.kibana.host: "http://kibana:5601"
+
+output.elasticsearch:
+  hosts: ["http://elasticsearch:9200"]
+  username: "elastic"
+  password: "Qq65TMmKZMPAypLYAyGQHRBFR7L"
+
+strict.perms: false
