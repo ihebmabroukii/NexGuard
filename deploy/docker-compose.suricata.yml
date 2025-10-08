@@ -1,0 +1,18 @@
+services:
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: suricata
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    command: -i eth0
+    volumes:
+      - ./suricata-config:/etc/suricata # Mount custom config
+      - ./suricata-logs:/var/log/suricata # Store logs persistently
+    networks:
+      - soc-net
+    restart: unless-stopped
+
+networks:
+  soc-net:
+    external: true

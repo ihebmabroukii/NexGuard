@@ -56,3 +56,10 @@ honeypot vm username: honeypot pwd:honeypot
 ![alt text](image-4.png)
 
 ![alt text](image-5.png)
+
+suricata logs:
+![alt text](image-6.png)
+stats logs
+![alt text](image-7.png)
+suricata logs
+![alt text](image-8.png)
