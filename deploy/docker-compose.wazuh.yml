@@ -1,0 +1,30 @@
+services:
+  wazuh.manager:
+    image: wazuh/wazuh-manager:4.7.3
+    hostname: wazuh.manager
+    ports:
+      - "1516:1514/udp" # Syslog (UDP), remapped to avoid conflict with Graylog
+      - "1515:1515" # Wazuh cluster communication
+      - "55000:55000" # Wazuh API
+    env_file:
+      - ../.env.attijari
+    environment:
+      - INDEXER_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+    volumes:
+      - wazuh_data:/var/ossec/data
+    networks:
+      - soc-net
+    restart: unless-stopped
+    healthcheck: # checking if the Wazuh API is up
+      test: CMD-SHELL nc -z localhost 55000 || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  wazuh_data:
+
+networks:
+  soc-net:
+    external: true

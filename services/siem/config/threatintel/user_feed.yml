@@ -1,0 +1,7 @@
+admin: "Default-Admin-Account"
+root: "High-Privilege-Risk"
+service_account: "Suspicious-Service-Account"
+guest: "Temporary-User-Risk"
+john.doe: "Compromised-User"
+iheb.mabrouki: "Compromised-User"
+rania.jarray: "Compromised-User"

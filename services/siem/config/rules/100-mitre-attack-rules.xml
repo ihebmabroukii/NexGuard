@@ -1,0 +1,26 @@
+<group name="nexguard,mitre-attack">
+  
+  <rule id="200001" level="10">
+    <decoded_as>json</decoded_as>
+    <description>Possible valid account abuse detected</description>
+    <mitre>
+      <id>T1078</id>
+      <tactic>Initial Access</tactic>
+    </mitre>
+    <group>nexguard,mitre</group>
+    <status>enabled</status>
+  </rule>
+
+  <rule id="200002" level="10">
+    <decoded_as>json</decoded_as>
+    <description>Suspicious command execution detected</description>
+    <mitre>
+      <id>T1059</id>
+      <tactic>Execution</tactic>
+    </mitre>
+    <group>nexguard,mitre</group>
+    <status>enabled</status>
+  </rule>
+
+  <!-- Add more MITRE ATT&CK rules here commenti every new rule  -->
+</group>

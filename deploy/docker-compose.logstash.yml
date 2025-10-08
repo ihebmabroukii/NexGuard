@@ -1,0 +1,25 @@
+services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.12.2
+    container_name: logstash
+    restart: unless-stopped
+    environment:
+      - ELASTICSEARCH_HOST=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+    volumes:
+      - ../logstash/pipeline/wazuh-elasticsearch.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ../logstash/templates/wazuh.json:/etc/logstash/templates/wazuh.json:ro
+      - wazuh-logs:/var/ossec/logs/alerts:ro
+    env_file:
+      - ../.env.attijari
+    networks:
+      - soc-net
+
+volumes:
+  wazuh-logs:
+    external: true
+
+networks:
+  soc-net:
+    external: true

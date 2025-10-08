@@ -1,0 +1,40 @@
+# == MALWARE & C2 ==
+alert http any any -> any any (msg:"[MALWARE] Connection to known bad IP (C2)"; content:"Host:"; http_header; content:"185.234.219.1"; sid:1000001; rev:1; classtype:trojan-activity;)
+alert dns any any -> any any (msg:"[MALWARE] DNS Query to known malicious domain"; dns.query; content:"malicious-domain.com"; nocase; sid:1000002; rev:1; classtype:trojan-activity;)
+
+# == PHISHING ==
+alert http any any -> any any (msg:"[PHISHING] Suspicious domain in HTTP Host header"; http.host; content:"login.microsoftonline.com"; nocase; sid:1000003; rev:1; classtype:trojan-activity;)
+alert tls any any -> any any (msg:"[PHISHING] TLS SNI contains suspicious keyword"; tls.sni; content:"update"; nocase; sid:1000004; rev:1; classtype:trojan-activity;)
+
+# == BRUTE FORCE ==
+alert tcp any any -> any 22 (msg:"[BRUTEFORCE] SSH brute-force attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:1000005; rev:1; classtype:attempted-admin;)
+alert tcp any any -> any 3389 (msg:"[BRUTEFORCE] RDP brute-force attempt"; flags:S; threshold:type threshold, track by_src, count 5, seconds 60; sid:1000006; rev:1; classtype:attempted-admin;)
+
+# == EXPLOITS ==
+alert http any any -> any any (msg:"[EXPLOIT] Possible Shellshock in HTTP headers"; content:"() {"; http_header; sid:1000007; rev:1; classtype:web-application-attack;)
+alert http any any -> any any (msg:"[EXPLOIT] SQLi attempt"; content:"SELECT "; nocase; http.uri; pcre:"/\b(select|union|insert|drop|update)\b/i"; sid:1000008; rev:1; classtype:web-application-attack;)
+
+# == SCANNING ==
+alert tcp any any -> any any (msg:"[RECON] Possible SYN Port Scan"; flags:S; threshold:type threshold, track by_src, count 10, seconds 5; sid:1000009; rev:1; classtype:attempted-recon;)
+alert icmp any any -> any any (msg:"[RECON] ICMP Echo Ping"; itype:8; sid:1000010; rev:1; classtype:attempted-recon;)
+
+# == SUSPICIOUS TRAFFIC ==
+alert http any any -> any any (msg:"[SUSPICIOUS] .exe download"; flow:to_client,established; http.uri; content:".exe"; nocase; sid:1000011; rev:1; classtype:misc-activity;)
+alert http any any -> any any (msg:"[SUSPICIOUS] curl User-Agent"; http.user_agent; content:"curl"; nocase; sid:1000012; rev:1; classtype:misc-activity;)
+
+# == TOR TRAFFIC ==
+alert http any any -> any any (msg:"[ANONYMITY] Access to TOR directory"; content:"/tor/"; http.uri; nocase; sid:1000013; rev:1; classtype:misc-activity;)
+
+# == REMOTE ACCESS TOOLS ==
+alert dns any any -> any any (msg:"[RAT] DNS Query to ngrok.io"; dns.query; content:"ngrok.io"; nocase; sid:1000014; rev:1; classtype:policy-violation;)
+
+# == CRYPTO-MINING ==
+alert http any any -> any any (msg:"[MINING] Known mining pool usage"; http.host; content:"minexmr.com"; sid:1000015; rev:1; classtype:policy-violation;)
+alert tcp any any -> any 3333 (msg:"[MINING] Default crypto-miner port used"; sid:1000016; rev:1; classtype:policy-violation;)
+
+# == OTHER BEHAVIORAL ==
+alert http any any -> any any (msg:"[INFO] HTTP GET request"; http.method; content:"GET"; sid:1000017; rev:1; classtype:misc-activity;)
+alert http any any -> any any (msg:"[INFO] HTTP POST request"; http.method; content:"POST"; sid:1000018; rev:1; classtype:misc-activity;)
+
+# == TEST RULE ==
+alert ip any any -> any any (msg:"[TEST] Suricata basic alert working"; sid:9999999; rev:1; classtype:other-activity;)
