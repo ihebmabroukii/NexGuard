@@ -1,0 +1,80 @@
+version: "3.8"
+
+services:
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    restart: unless-stopped
+    environment:
+      - CASSANDRA_CLUSTER_NAME=TheHiveCluster
+      - CASSANDRA_NUM_TOKENS=256
+      - HEAP_NEWSIZE=256M
+      - MAX_HEAP_SIZE=512M
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - thehive-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - thehive-net
+
+  thehive:
+    image: strangebee/thehive:5.2
+    container_name: thehive
+    depends_on:
+      - cassandra
+      - elasticsearch
+      - cortex
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1g
+      - CORTEX_URL=http://cortex:9001
+      - STORAGE_PATH=/opt/thehive/data
+      - CASSANDRA_HOSTS=cassandra
+      - CASSANDRA_CLUSTER_NAME=TheHiveCluster
+      - ELASTICSEARCH__HOSTS=["http://elasticsearch:9200"]
+    ports:
+      - "9000:9000"
+    volumes:
+      - thehive_data:/opt/thehive/data
+    networks:
+      - thehive-net
+
+  cortex:
+    image: thehiveproject/cortex:3.1.8
+    container_name: cortex
+    user: "0:0"
+    ports:
+      - "9001:9001"
+    volumes:
+      - cortex_conf:/etc/cortex
+      - cortex_logs:/var/log/cortex
+      - cortex_jobs:/tmp/cortex-jobs
+    environment:
+      - JAVA_OPTS=-Xms512M -Xmx1G
+      - SEARCH_URI=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - thehive-net
+
+volumes:
+  cassandra_data:
+  es_data:
+  thehive_data:
+  cortex_conf:
+  cortex_logs:
+  cortex_jobs:
+networks:
+  thehive-net:

@@ -1,0 +1,8 @@
+FROM thehiveproject/cortex:3.1.0
+
+# Copier la configuration
+COPY cortex_conf/application.conf /etc/cortex/application.conf
+
+# Créer le dossier de données s'il n'existe pas et appliquer les permissions
+RUN mkdir -p /opt/cortex/data \
+    && chown -R 1000:1000 /etc/cortex /opt/cortex/data
